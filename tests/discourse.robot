@@ -39,7 +39,7 @@ Check if a weak admin password is rejected
 
 Check if discourse can be configured
     ${password} =    Evaluate    secrets.token_urlsafe(16) + "-Aa1!"    modules=secrets
-    Set Suite Variable    ${admin_password}    ${password}
+    Set Suite Variable    ${discourse_password}    ${password}
     ${rc} =    Execute Command
     ...    api-cli run module/${module_id}/configure-module --data '{"host":"${TEST_HOST}","lets_encrypt":false,${ADMIN},"admin_password":"${password}"}'
     ...    return_rc=True  return_stdout=False

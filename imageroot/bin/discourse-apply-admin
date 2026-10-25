@@ -41,7 +41,8 @@ password_file = "secrets/admin_password"
 password = ""
 if os.path.exists(password_file):
     with open(password_file) as fp:
-        password = fp.read().strip()
+        # Spaces at the ends are part of the password the admin typed
+        password = fp.read().rstrip("\n")
 
 envfile = f"secrets/apply-admin.env.{os.getpid()}"
 try:

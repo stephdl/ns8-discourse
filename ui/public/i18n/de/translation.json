@@ -98,7 +98,9 @@
     "notification_email": "Absenderadresse (optional)",
     "notification_email_helper": "Adresse, die als Absender der Forums-E-Mails verwendet wird. Leer bedeutet noreply am Hostnamen des Forums",
     "notification_email_anyOf": "Muss eine gültige E-Mail-Adresse sein",
-    "no_route_description": "Diese Instanz ist ein Klon und behält den Hostnamen ihrer Quelle. Lege einen neuen Hostnamen fest und speichere, um Discourse erreichbar zu machen."
+    "no_route_description": "Diese Instanz ist ein Klon und behält den Hostnamen ihrer Quelle. Lege einen neuen Hostnamen fest und speichere, um Discourse erreichbar zu machen.",
+    "admin_username_already_used": "Dieser Benutzername gehört zu einem anderen Discourse-Konto",
+    "admin_email_already_used": "Diese E-Mail gehört zu einem anderen Discourse-Konto"
   },
   "about": {
     "title": "Über"

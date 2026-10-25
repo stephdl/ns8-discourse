@@ -98,7 +98,9 @@
     "notification_email": "Indirizzo mittente (opzionale)",
     "notification_email_helper": "Indirizzo usato come mittente delle email del forum. Vuoto significa noreply sul nome host del forum",
     "notification_email_anyOf": "Deve essere un indirizzo email valido",
-    "no_route_description": "Questa istanza è un clone e mantiene il nome host della sorgente. Imposta un nuovo nome host e salva per rendere Discourse raggiungibile."
+    "no_route_description": "Questa istanza è un clone e mantiene il nome host della sorgente. Imposta un nuovo nome host e salva per rendere Discourse raggiungibile.",
+    "admin_username_already_used": "Questo nome utente appartiene a un altro account Discourse",
+    "admin_email_already_used": "Questa email appartiene a un altro account Discourse"
   },
   "about": {
     "title": "Informazioni"

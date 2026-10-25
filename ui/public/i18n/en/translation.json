@@ -98,7 +98,9 @@
     "notification_email": "Sender address (optional)",
     "notification_email_helper": "Address used as sender of the forum emails. Empty means noreply at the forum host name",
     "notification_email_anyOf": "Must be a valid email address",
-    "no_route_description": "This instance is a clone and keeps the host name of its source. Set a new host name and save to make Discourse reachable."
+    "no_route_description": "This instance is a clone and keeps the host name of its source. Set a new host name and save to make Discourse reachable.",
+    "admin_username_already_used": "This username belongs to another Discourse account",
+    "admin_email_already_used": "This email belongs to another Discourse account"
   },
   "about": {
     "title": "About"

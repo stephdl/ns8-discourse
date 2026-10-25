@@ -98,7 +98,9 @@
     "notification_email": "Igorlearen helbidea (aukerakoa)",
     "notification_email_helper": "Foroko mezuen igorle gisa erabiltzen den helbidea. Hutsik badago, noreply foroaren ostalari-izenean",
     "notification_email_anyOf": "Baliozko helbide elektroniko bat izan behar du",
-    "no_route_description": "Instantzia hau klon bat da eta jatorriaren ostalari-izena gordetzen du. Ezarri ostalari-izen berri bat eta gorde Discourse eskuragarri egiteko."
+    "no_route_description": "Instantzia hau klon bat da eta jatorriaren ostalari-izena gordetzen du. Ezarri ostalari-izen berri bat eta gorde Discourse eskuragarri egiteko.",
+    "admin_username_already_used": "Erabiltzaile-izen hau beste Discourse kontu batena da",
+    "admin_email_already_used": "Helbide elektroniko hau beste Discourse kontu batena da"
   },
   "about": {
     "title": "Honi buruz"

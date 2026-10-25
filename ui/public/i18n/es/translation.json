@@ -98,7 +98,9 @@
     "notification_email": "Dirección del remitente (opcional)",
     "notification_email_helper": "Dirección usada como remitente de los correos del foro. Vacío significa noreply en el nombre de host del foro",
     "notification_email_anyOf": "Debe ser una dirección de correo válida",
-    "no_route_description": "Esta instancia es un clon y conserva el nombre de host de su origen. Indica un nuevo nombre de host y guarda para que Discourse sea accesible."
+    "no_route_description": "Esta instancia es un clon y conserva el nombre de host de su origen. Indica un nuevo nombre de host y guarda para que Discourse sea accesible.",
+    "admin_username_already_used": "Este nombre de usuario pertenece a otra cuenta de Discourse",
+    "admin_email_already_used": "Este correo pertenece a otra cuenta de Discourse"
   },
   "about": {
     "title": "Acerca de"

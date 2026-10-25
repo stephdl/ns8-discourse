@@ -98,7 +98,9 @@
     "notification_email": "Adresse d'expéditeur (optionnelle)",
     "notification_email_helper": "Adresse utilisée comme expéditeur des emails du forum. Vide signifie noreply sur le nom d'hôte du forum",
     "notification_email_anyOf": "Doit être une adresse email valide",
-    "no_route_description": "Cette instance est un clone et garde le nom d'hôte de sa source. Indiquez un nouveau nom d'hôte et enregistrez pour rendre Discourse accessible."
+    "no_route_description": "Cette instance est un clone et garde le nom d'hôte de sa source. Indiquez un nouveau nom d'hôte et enregistrez pour rendre Discourse accessible.",
+    "admin_username_already_used": "Ce nom d'utilisateur appartient à un autre compte Discourse",
+    "admin_email_already_used": "Cet email appartient à un autre compte Discourse"
   },
   "about": {
     "title": "À propos"

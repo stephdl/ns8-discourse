@@ -98,7 +98,9 @@
     "notification_email": "Endereço do remetente (opcional)",
     "notification_email_helper": "Endereço usado como remetente dos emails do fórum. Vazio significa noreply no nome do anfitrião do fórum",
     "notification_email_anyOf": "Deve ser um endereço de email válido",
-    "no_route_description": "Esta instância é um clone e mantém o nome do anfitrião da origem. Defina um novo nome do anfitrião e guarde para tornar o Discourse acessível."
+    "no_route_description": "Esta instância é um clone e mantém o nome do anfitrião da origem. Defina um novo nome do anfitrião e guarde para tornar o Discourse acessível.",
+    "admin_username_already_used": "Este nome de utilizador pertence a outra conta Discourse",
+    "admin_email_already_used": "Este email pertence a outra conta Discourse"
   },
   "about": {
     "title": "Acerca de"

@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Refuse an admin username or email owned by another Discourse account before
+# anything is saved, the database answers even while Discourse boots
+
+import os
+import sys
+import json
+import subprocess
+import agent
+
+agent.set_weight(os.path.basename(__file__), 0) # Validation step, no task progress at all
+
+data = json.load(sys.stdin)
+
+if subprocess.run(["systemctl", "--user", "-q", "is-active", "postgresql-app.service"]).returncode != 0:
+    sys.exit(0) # First configure: the database does not exist yet
+
+admin_id = os.getenv("ADMIN_ID", "")
+query = """
+SELECT 'admin_username' FROM users WHERE username_lower = lower(:'username') AND id::text <> :'admin_id'
+UNION ALL
+SELECT 'admin_email' FROM user_emails WHERE lower(email) = lower(:'email') AND user_id::text <> :'admin_id'
+"""
+proc = subprocess.run(["podman", "exec", "-i", "postgresql-app", "psql", "-U", "discourse", "-d", "discourse",
+    "-tA", "-v", "ON_ERROR_STOP=1",
+    "-v", "username=" + data["admin_username"],
+    "-v", "email=" + data["admin_email"],
+    "-v", "admin_id=" + (admin_id or "0")],
+    input=query, stdout=subprocess.PIPE, text=True)
+if proc.returncode != 0:
+    print(agent.SD_WARNING + "Cannot check the admin account against Discourse users", file=sys.stderr)
+    sys.exit(0)
+
+errors = []
+for field in sorted(set(proc.stdout.split())):
+    errors.append({'field':field,'parameter':field,'value':data[field],'error':field + '_already_used'})
+
+if errors:
+    agent.set_status('validation-failed')
+    json.dump(errors, fp=sys.stdout)
+    sys.exit(2)

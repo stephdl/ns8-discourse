@@ -1,0 +1,30 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman redis-app.service
+BindsTo=discourse.service
+After=discourse.service
+Before=discourse-app.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/redis-app.pid %t/redis-app.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/redis-app.pid \
+    --cidfile %t/redis-app.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/discourse.pod-id --replace -d --name redis-app \
+    --volume redis-data:/data:Z \
+    ${REDIS_IMAGE} redis-server --bind 127.0.0.1 --save 60 1
+ExecStartPost=/usr/bin/podman exec redis-app /bin/sh -c 'until redis-cli ping | grep -q PONG; do sleep 1; done'
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/redis-app.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/redis-app.ctr-id
+PIDFile=%t/redis-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

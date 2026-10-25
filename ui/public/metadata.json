@@ -1,19 +1,29 @@
 {
-  "name": "kickstart",
+  "name": "Discourse",
+  "upstream_name": "Discourse version set automatically",
   "description": {
-    "en": "My kickstart module"
+    "en": "Community forum for discussions, questions and announcements, with local accounts and optional OpenID Connect login.",
+    "fr": "Forum communautaire pour les discussions, les questions et les annonces, avec comptes locaux et connexion OpenID Connect en option.",
+    "it": "Forum della community per discussioni, domande e annunci, con account locali e accesso OpenID Connect opzionale.",
+    "de": "Community-Forum für Diskussionen, Fragen und Ankündigungen, mit lokalen Konten und optionaler OpenID-Connect-Anmeldung.",
+    "es": "Foro de comunidad para debates, preguntas y anuncios, con cuentas locales e inicio de sesión OpenID Connect opcional.",
+    "pt": "Fórum comunitário para discussões, perguntas e anúncios, com contas locais e início de sessão OpenID Connect opcional.",
+    "pt_BR": "Fórum de comunidade para discussões, perguntas e anúncios, com contas locais e login OpenID Connect opcional.",
+    "eu": "Komunitateko foroa eztabaidetarako, galderetarako eta iragarkietarako, kontu lokalekin eta aukerako OpenID Connect saio hasierarekin."
   },
-  "categories": [],
+  "categories": [
+    "collaboration"
+  ],
   "authors": [
     {
-      "name": "Name Surname",
-      "email": "author@yourmail.org"
+      "name": "Stephane de Labrusse",
+      "email": "stephdl@de-labrusse.fr"
     }
   ],
   "docs": {
-    "documentation_url": "https://docs.kickstart.com/",
-    "bug_url": "https://github.com/NethServer/dev",
-    "code_url": "https://github.com/author/ns8-kickstart"
+    "documentation_url": "https://github.com/stephdl/ns8-discourse#readme",
+    "bug_url": "https://github.com/stephdl/dev/issues",
+    "code_url": "https://github.com/stephdl/ns8-discourse"
   },
-  "source": "ghcr.io/nethserver/kickstart"
+  "source": "ghcr.io/stephdl/discourse"
 }

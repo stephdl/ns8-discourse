@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import json
+import agent
+
+request = json.load(sys.stdin)
+
+if not request.get("replace"):
+    print(agent.SD_WARNING + "Cloned instance has no web route, set a new host name in Settings", file=sys.stderr)
+    sys.exit(0)
+
+# Move: the source instance is gone, take over its host name
+# The source route stays in place until the move ends
+open("skip-host-check", "w").close()
+try:
+    configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
+        "host": os.environ["TRAEFIK_HOST"],
+        # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand
+        "lets_encrypt": False,
+        "admin_email": os.environ["ADMIN_EMAIL"],
+        "admin_username": os.environ["ADMIN_USERNAME"],
+        "notification_email": os.environ.get("NOTIFICATION_EMAIL", ""),
+        "default_locale": os.environ.get("DEFAULT_LOCALE", "en"),
+        "oidc_enabled": os.environ.get("OIDC_ENABLED") == "True",
+        "oidc_discovery_url": os.environ.get("OIDC_DISCOVERY_URL", ""),
+        "oidc_client_id": os.environ.get("OIDC_CLIENT_ID", ""),
+    })
+finally:
+    if os.path.exists("skip-host-check"):
+        os.unlink("skip-host-check")
+agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")

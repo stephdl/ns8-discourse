@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Write the Discourse runtime settings. DISCOURSE_* variables shadow the
+# site settings: they are locked in the Discourse admin, NS8 owns them.
+
+import os
+import urllib.parse
+import agent
+
+env = os.environ
+host = env["TRAEFIK_HOST"]
+
+settings = {
+    "DISCOURSE_HOSTNAME": host,
+    "DISCOURSE_DB_HOST": "127.0.0.1",
+    "DISCOURSE_REDIS_HOST": "127.0.0.1",
+    "DISCOURSE_FORCE_HTTPS": "true",
+    "DISCOURSE_NOTIFICATION_EMAIL": env.get("NOTIFICATION_EMAIL") or f"noreply@{host}",
+    "DISCOURSE_DEFAULT_LOCALE": env.get("DEFAULT_LOCALE", "en"),
+    # The module backup already saves the database and the uploads
+    "DISCOURSE_AUTOMATIC_BACKUPS_ENABLED": "false",
+    "DISCOURSE_OPENID_CONNECT_ENABLED": "false",
+}
+
+if env.get("OIDC_ENABLED") == "True":
+    discovery_url = env["OIDC_DISCOVERY_URL"]
+    settings.update({
+        "DISCOURSE_OPENID_CONNECT_ENABLED": "true",
+        "DISCOURSE_OPENID_CONNECT_DISCOVERY_DOCUMENT": discovery_url,
+        "DISCOURSE_OPENID_CONNECT_CLIENT_ID": env["OIDC_CLIENT_ID"],
+        "DISCOURSE_OPENID_CONNECT_AUTHORIZE_SCOPE": "openid profile email",
+        # The provider already gives name and email: create the account without a confirmation form
+        "DISCOURSE_AUTH_SKIP_CREATE_CONFIRM": "true",
+        # The SSRF filter refuses private addresses, an IdP on the LAN must be allowed by name
+        "DISCOURSE_ALLOWED_INTERNAL_HOSTS": urllib.parse.urlsplit(discovery_url).hostname,
+    })
+
+rdb = agent.redis_connect(use_replica=True)
+smtp = agent.get_smarthost_settings(rdb)
+if smtp["enabled"] and smtp["host"]:
+    # From the pod, the node loopback is reachable at 10.0.2.2
+    local_smtp = smtp["host"] in ("127.0.0.1", "localhost")
+    smtp_host = "10.0.2.2" if local_smtp else smtp["host"]
+    # The local certificate cannot match 10.0.2.2
+    tls_verify = smtp["tls_verify"] and not local_smtp
+    settings.update({
+        "DISCOURSE_SMTP_ADDRESS": smtp_host,
+        "DISCOURSE_SMTP_PORT": str(smtp["port"]),
+        "DISCOURSE_SMTP_DOMAIN": host,
+        "DISCOURSE_SMTP_USER_NAME": smtp["username"],
+        "DISCOURSE_SMTP_PASSWORD": smtp["password"],
+        "DISCOURSE_SMTP_ENABLE_START_TLS": "true" if smtp["encrypt_smtp"] == "starttls" else "false",
+        "DISCOURSE_SMTP_FORCE_TLS": "true" if smtp["encrypt_smtp"] == "tls" else "false",
+        "DISCOURSE_SMTP_OPENSSL_VERIFY_MODE": "peer" if tls_verify else "none",
+    })
+    if not smtp["username"]:
+        settings["DISCOURSE_SMTP_AUTHENTICATION"] = "none"
+
+# The file holds the smarthost password
+fd = os.open("discourse.env.tmp", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+with os.fdopen(fd, "w") as fp:
+    for key, value in settings.items():
+        fp.write(f"{key}={value}\n")
+os.replace("discourse.env.tmp", "discourse.env")

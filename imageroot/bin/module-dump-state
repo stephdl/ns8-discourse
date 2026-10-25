@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2022 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 set -e
 
-echo "Dumping kickstart postgres database"
-podman exec postgresql-app pg_dump -U postgres --format=c  kickstart > kickstart.pg_dump
+# No guard on the service state: a snapshot without the dump cannot be restored, fail the backup instead
+podman exec postgresql-app pg_dump -U discourse --format=c discourse > discourse.pg_dump

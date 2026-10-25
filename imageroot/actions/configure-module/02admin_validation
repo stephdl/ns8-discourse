@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import re
+import sys
+import json
+import agent
+
+agent.set_weight(os.path.basename(__file__), 0) # Validation step, no task progress at all
+
+data = json.load(sys.stdin)
+password = data.get("admin_password", "")
+errors = []
+
+# A password still waiting in the file was accepted by a previous configure
+password_pending = os.path.exists("secrets/admin_password")
+if not password and os.getenv("ADMIN_PASSWORD_SET") != "True" and not password_pending:
+    errors.append({'field':'admin_password','parameter':'admin_password','value':'','error':'admin_password_required'})
+elif re.search(r'[\x00-\x1f\x7f]', password):
+    # The password goes into an env file as one KEY=value line
+    errors.append({'field':'admin_password','parameter':'admin_password','value':'','error':'admin_password_invalid_chars'})
+elif password:
+    # Same rules as the UI password meter, Discourse wants at least 15 characters for admins
+    if (len(password) < 15 or not re.search(r'[a-z]', password) or not re.search(r'[A-Z]', password)
+            or not re.search(r'[0-9]', password) or not re.search(r'[^a-zA-Z0-9]', password)):
+        errors.append({'field':'admin_password','parameter':'admin_password','value':'','error':'admin_password_weak'})
+
+if errors:
+    agent.set_status('validation-failed')
+    json.dump(errors, fp=sys.stdout)
+    sys.exit(2)

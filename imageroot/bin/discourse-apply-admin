@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Push the admin account into Discourse, once the application answers.
+
+import os
+import re
+import sys
+import time
+import subprocess
+import urllib.request
+import agent
+
+if subprocess.run(["systemctl", "--user", "is-active", "-q", "discourse-app.service"]).returncode != 0:
+    print("discourse-app.service is not running, the admin account is applied at the next configure", file=sys.stderr)
+    sys.exit(0)
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+# The first boot runs the database migrations and the assets build: it takes minutes
+opener = urllib.request.build_opener(NoRedirect)
+deadline = time.time() + 900
+while True:
+    try:
+        if opener.open(f"http://127.0.0.1:{os.environ['TCP_PORT']}/srv/status", timeout=10).status == 200:
+            break
+    except Exception:
+        pass
+    if time.time() > deadline:
+        print(agent.SD_ERR + "Discourse did not start in time", file=sys.stderr)
+        sys.exit(1)
+    time.sleep(5)
+
+password_file = "secrets/admin_password"
+password = ""
+if os.path.exists(password_file):
+    with open(password_file) as fp:
+        # Spaces at the ends are part of the password the admin typed
+        password = fp.read().rstrip("\n")
+
+envfile = f"secrets/apply-admin.env.{os.getpid()}"
+try:
+    fd = os.open(envfile, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as fp:
+        fp.write(f"NS8_ADMIN_EMAIL={os.environ['ADMIN_EMAIL']}\n")
+        fp.write(f"NS8_ADMIN_USERNAME={os.environ['ADMIN_USERNAME']}\n")
+        fp.write(f"NS8_ADMIN_ID={os.environ.get('ADMIN_ID', '')}\n")
+        fp.write(f"NS8_ADMIN_PASSWORD={password}\n")
+    with open(os.path.join(os.environ["AGENT_INSTALL_DIR"], "discourse/apply-admin.rb")) as script:
+        proc = subprocess.run(["podman", "exec", "-i", f"--env-file={envfile}", "-u", "discourse",
+            "-w", "/var/www/discourse", "discourse-app", "bundle", "exec", "rails", "runner", "-"],
+            stdin=script, stdout=subprocess.PIPE, text=True)
+finally:
+    os.unlink(envfile)
+
+if "NS8_ADMIN_NEEDS_PASSWORD" in proc.stdout:
+    # Make the UI ask for a password again
+    agent.set_env("ADMIN_PASSWORD_SET", "False")
+    agent.set_env("ADMIN_ID", "")
+    print(agent.SD_ERR + "The Discourse admin account no longer exists, set a new admin password in Settings", file=sys.stderr)
+    sys.exit(1)
+
+applied = re.search(r"^NS8_ADMIN_APPLIED=(\d+)$", proc.stdout, re.M)
+if proc.returncode != 0 or not applied:
+    print(agent.SD_ERR + "The Discourse admin account was not applied", file=sys.stderr)
+    sys.exit(1)
+
+# Track the account by id, so a new email or username renames it instead of creating another admin
+agent.set_env("ADMIN_ID", applied.group(1))
+if password:
+    agent.set_env("ADMIN_PASSWORD_SET", "True")
+    os.unlink(password_file)

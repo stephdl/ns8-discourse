@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import json
+import subprocess
+import agent
+
+request = json.load(sys.stdin)
+renv = request['environment']
+
+# Passwords and secrets come back with the restored files
+if agent.http_route_in_use(domain=renv["TRAEFIK_HOST"]):
+    # The original instance may still run: start without a route, like a clone
+    print(agent.SD_WARNING + f"Host {renv['TRAEFIK_HOST']} is used by another application, set a new host name in Settings", file=sys.stderr)
+    subprocess.run(["systemctl", "--user", "enable", "--now", "discourse.service"], check=True)
+    sys.exit(0)
+
+configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
+    "host": renv["TRAEFIK_HOST"],
+    # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand
+    "lets_encrypt": False,
+    "admin_email": renv["ADMIN_EMAIL"],
+    "admin_username": renv["ADMIN_USERNAME"],
+    "notification_email": renv.get("NOTIFICATION_EMAIL", ""),
+    "default_locale": renv.get("DEFAULT_LOCALE", "en"),
+    "oidc_enabled": renv.get("OIDC_ENABLED") == "True",
+    "oidc_discovery_url": renv.get("OIDC_DISCOVERY_URL", ""),
+    "oidc_client_id": renv.get("OIDC_CLIENT_ID", ""),
+})
+agent.assert_exp(configure_retval['exit_code'] == 0, "The configure-module subtask failed!")

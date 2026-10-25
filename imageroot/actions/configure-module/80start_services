@@ -13,6 +13,11 @@ exec 1>&2
 # Settings are read at container start only: restart a running app, but never
 # stop a first boot in the middle of its database migrations
 if systemctl --user -q is-active discourse-app.service; then
+    # The unit is active as soon as the container runs: wait for the end of the boot
+    for (( i = 0; i < 180; i++ )); do
+        [[ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${TCP_PORT}/srv/status")" == 200 ]] && break
+        sleep 5
+    done
     systemctl --user restart discourse-app.service
 fi
 systemctl --user enable discourse.service

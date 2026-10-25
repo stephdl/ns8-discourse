@@ -2,9 +2,20 @@
 Library    SSHLibrary
 
 *** Variables ***
+${ADMIN_USER}        admin
+${ADMIN_PASSWORD}    Nethesis,1234
 # Any resolvable-looking name: the schema demands a dot, nothing resolves it.
 ${TEST_HOST}    discourse.ns8-ci.test
 ${ADMIN}        "admin_email":"admin@ns8-ci.test","admin_username":"ns8admin","default_locale":"en","oidc_enabled":false
+
+*** Keywords ***
+Login to cluster-admin
+    New Page    https://${NODE_ADDR}/cluster-admin/
+    Fill Text    text="Username"    ${ADMIN_USER}
+    Click    button >> text="Continue"
+    Fill Text    text="Password"    ${ADMIN_PASSWORD}
+    Click    button >> text="Log in"
+    Wait For Elements State    css=#main-content    visible    timeout=10s
 
 *** Test Cases ***
 Check if discourse is installed correctly
@@ -53,6 +64,22 @@ Check if a reconfigure without password is accepted
     ...    api-cli run module/${module_id}/configure-module --data '{"host":"${TEST_HOST}","lets_encrypt":false,${ADMIN}}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
+
+Take screenshots
+    [Tags]    ui
+    Import Library    Browser
+    New Browser    chromium    headless=True
+    New Context    ignoreHTTPSErrors=True
+    Login to cluster-admin
+    Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${module_id}
+    Wait For Elements State    iframe >>> h2 >> text="Status"    visible    timeout=10s
+    Sleep    5s
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/1._Status.png
+    Go To    https://${NODE_ADDR}/cluster-admin/#/apps/${module_id}?page=settings
+    Wait For Elements State    iframe >>> h2 >> text="Settings"    visible    timeout=10s
+    Sleep    5s
+    Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/2._Settings.png
+    Close Browser
 
 Check if discourse is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}

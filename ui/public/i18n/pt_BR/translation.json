@@ -1,35 +1,133 @@
 {
-    "common": {
-        "required": "Obrigatório",
-        "work_in_progress": "Em progresso",
-        "processing": "Procesando..."
-    },
-    "status": {
-        "services": "Serviço | Serviços",
-        "app_instance": "Instância do aplicativo",
-        "title": "Estado"
-    },
-    "error": {
-        "403": "Operation not authorized",
-        "401": "Invalid authentication",
-        "generic_error": "Something went wrong",
-        "error": "Error",
-        "network_timeout": "Network timeout",
-        "404": "Resource not found",
-        "network_error": "Network error",
-        "validation_error": "Validation error"
-    },
-    "about": {
-        "title": "About"
-    },
-    "action": {
-        "list-backup-repositories": "List backup repositories",
-        "list-backups": "List backups"
-    },
-    "task": {
-        "cannot_create_task": "Cannot create task {action}"
-    },
-    "settings": {
-        "title": "Settings"
-    }
+  "common": {
+    "required": "Obrigatório",
+    "work_in_progress": "Trabalho em andamento",
+    "processing": "Processando...",
+    "loading": "Carregando..."
+  },
+  "status": {
+    "title": "Estado",
+    "app_instance": "Instância da aplicação",
+    "services": "Serviço | Serviços",
+    "app_images": "Imagem da aplicação | Imagens da aplicação",
+    "app_volumes": "Volume da aplicação | Volumes da aplicação",
+    "installation_node": "Nó de instalação",
+    "node": "Nó",
+    "name": "Nome",
+    "size": "Tamanho",
+    "created": "Criado",
+    "mount": "Ponto de montagem",
+    "no_services": "Nenhum serviço",
+    "no_images": "Nenhuma imagem",
+    "no_volumes": "Nenhum volume",
+    "not_configured": "Não configurado",
+    "open_webapp": "Abrir Discourse",
+    "configure": "Configurar",
+    "application": "Aplicação",
+    "restart_application": "Reiniciar a aplicação",
+    "restart_module_warning": "Tem a certeza de que quer reiniciar {name}? O serviço ficará indisponível durante alguns instantes.",
+    "go_to_node_details": "Ver os detalhes do nó",
+    "failed_services": "Serviços com falha",
+    "all_services_running": "Todos os serviços estão em execução",
+    "search_images": "Procurar imagens",
+    "search_volumes": "Procurar volumes",
+    "discourse_webapp": "Aplicação web Discourse"
+  },
+  "settings": {
+    "title": "Configurações",
+    "configure_instance": "Configurar {instance}",
+    "save": "Salvar",
+    "lets_encrypt": "Solicitar um certificado Let's Encrypt",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "advanced": "Avançado",
+    "configuring": "Configurando",
+    "domain_already_used_in_traefik": "Domínio já usado no Traefik",
+    "host_pattern": "Deve ser um nome de domínio completo válido",
+    "host_format": "Deve ser um nome de domínio completo válido",
+    "web_access": "Acesso web",
+    "choose_language": "Escolher um idioma",
+    "admin_account": "Administrador local",
+    "authentication": "Autenticação",
+    "notifications": "Notificações por e-mail",
+    "smarthost_disabled_title": "Notificações por e-mail desativadas",
+    "go_to_smarthost": "Configurar o smarthost",
+    "smarthost_enabled_title": "Notificações por e-mail ativadas",
+    "no_route_title": "Esta instância não tem endereço web",
+    "admin_password_confirm": "Confirmar a senha",
+    "admin_password_mismatch": "As senhas não coincidem",
+    "admin_password_minLength": "A senha é muito curta",
+    "instance_configuration": "Configurar Discourse",
+    "discourse_fqdn": "Nome de host do Discourse (FQDN)",
+    "host_change_title": "Alteração do nome de host de um fórum em uso",
+    "host_change_description": "Os links das postagens existentes mantêm o nome de host antigo até as postagens serem reconstruídas na administração do Discourse.",
+    "default_locale": "Idioma padrão",
+    "default_locale_helper": "Idioma das páginas e e-mails do fórum. Cada usuário pode alterá-lo nas preferências",
+    "default_locale_pattern": "Escolha um idioma da lista",
+    "admin_account_info_title": "A conta de administrador",
+    "admin_account_info_first": "Esta conta local tem todos os direitos de administração no Discourse. Escolha a senha agora: nenhum e-mail é necessário para ativá-la.",
+    "admin_account_info_set": "Esta conta local tem todos os direitos de administração e sempre funciona, mesmo se o provedor OpenID Connect estiver indisponível.",
+    "admin_username": "Nome de usuário do administrador",
+    "admin_username_helper": "3 a 20 caracteres: letras, dígitos, ponto, hífen e sublinhado",
+    "admin_username_invalid": "Use 3 a 20 caracteres: letras, dígitos, ponto, hífen e sublinhado",
+    "admin_username_pattern": "Use 3 a 20 caracteres: letras, dígitos, ponto, hífen e sublinhado",
+    "admin_email": "E-mail do administrador",
+    "admin_email_format": "Deve ser um endereço de e-mail válido",
+    "email_invalid": "Deve ser um endereço de e-mail válido",
+    "change_admin_password": "Alterar a senha do administrador",
+    "admin_password": "Senha do administrador",
+    "admin_password_too_weak": "Use pelo menos 15 caracteres com letras minúsculas e maiúsculas, um número e um símbolo",
+    "admin_password_weak": "Use pelo menos 15 caracteres com letras minúsculas e maiúsculas, um número e um símbolo",
+    "admin_password_required": "Escolha uma senha para o administrador",
+    "oidc_login": "Login com um provedor OpenID Connect",
+    "oidc_login_tooltip": "Os usuários fazem login com a conta de um provedor de identidade externo, como o Keycloak. As contas locais continuam funcionando.",
+    "oidc_callback_title": "URI de redirecionamento",
+    "oidc_callback_description": "Registre o Discourse no provedor como cliente confidencial, com o URI de redirecionamento {url}",
+    "oidc_discovery_url": "URL do documento de descoberta",
+    "oidc_discovery_url_helper": "O endereço .well-known/openid-configuration do provedor",
+    "oidc_discovery_url_invalid": "Deve ser uma URL http ou https",
+    "oidc_discovery_url_anyOf": "Deve ser uma URL http ou https",
+    "oidc_discovery_url_required": "A URL do documento de descoberta é obrigatória",
+    "oidc_client_id": "ID do cliente",
+    "oidc_client_id_required": "O ID do cliente é obrigatório",
+    "oidc_client_secret": "Segredo do cliente",
+    "oidc_client_secret_required": "O segredo do cliente é obrigatório",
+    "change_oidc_client_secret": "Alterar o segredo do cliente",
+    "smarthost_disabled_description": "O Discourse envia e-mails pelo smarthost do cluster, que não está configurado. Sem ele, os usuários não podem se cadastrar nem redefinir a senha.",
+    "smarthost_enabled_description": "O Discourse envia e-mails pelo smarthost do cluster {host}.",
+    "notification_email": "Endereço do remetente (opcional)",
+    "notification_email_helper": "Endereço usado como remetente dos e-mails do fórum. Vazio significa noreply no nome de host do fórum",
+    "notification_email_anyOf": "Deve ser um endereço de e-mail válido",
+    "no_route_description": "Esta instância é um clone e mantém o nome de host da origem. Defina um novo nome de host e salve para tornar o Discourse acessível."
+  },
+  "about": {
+    "title": "Sobre"
+  },
+  "task": {
+    "cannot_create_task": "Não é possível criar a tarefa {action}"
+  },
+  "action": {
+    "get-status": "Obter o estado",
+    "get-configuration": "Obter a configuração",
+    "configure-module": "Configurar o módulo",
+    "get-module-info": "Obter as informações do módulo",
+    "get-name": "Obter o nome",
+    "list-backup-repositories": "Listar os repositórios de backup",
+    "list-backups": "Listar os backups",
+    "list-installed-modules": "Listar os módulos instalados",
+    "restart-module": "Reiniciar o módulo"
+  },
+  "error": {
+    "error": "Erro",
+    "generic_error": "Algo correu mal",
+    "validation_error": "Erro de validação",
+    "network_error": "Erro de rede",
+    "network_timeout": "Tempo limite da rede esgotado",
+    "401": "Autenticação inválida",
+    "403": "Operação não autorizada",
+    "404": "Recurso não encontrado",
+    "cannot_retrieve_module_info": "Não é possível obter as informações do módulo",
+    "cannot_retrieve_installed_modules": "Não é possível obter os módulos instalados",
+    "cannot_retrieve_configuration": "Não é possível obter a configuração"
+  }
 }

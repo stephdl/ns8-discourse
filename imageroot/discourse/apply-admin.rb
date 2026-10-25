@@ -4,8 +4,20 @@ username = ENV.fetch("NS8_ADMIN_USERNAME")
 password = ENV["NS8_ADMIN_PASSWORD"].to_s
 
 user = User.find_by(id: ENV["NS8_ADMIN_ID"].to_i) if ENV["NS8_ADMIN_ID"].to_s != ""
-user ||= User.find_by_email(email) || User.find_by_username(username)
+user ||= User.find_by_email(email)
 user ||= User.new(name: username)
+
+# Renaming the admin onto an account that already exists would fail on save!
+other = User.find_by_username(username)
+if other && other.id != user.id
+  warn "NS8_ADMIN_ERROR username #{username} belongs to another account"
+  exit 3
+end
+other = User.find_by_email(email)
+if other && other.id != user.id
+  warn "NS8_ADMIN_ERROR email #{email} belongs to another account"
+  exit 3
+end
 user.username = username if user.username != username
 user.email = email if user.email != email
 # Discourse refuses to reuse the current password: an identical one is already applied

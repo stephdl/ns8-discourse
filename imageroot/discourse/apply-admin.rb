@@ -5,6 +5,11 @@ password = ENV["NS8_ADMIN_PASSWORD"].to_s
 
 user = User.find_by(id: ENV["NS8_ADMIN_ID"].to_i) if ENV["NS8_ADMIN_ID"].to_s != ""
 user ||= User.find_by_email(email)
+if user.nil? && password == ""
+  # The managed account was deleted in Discourse: never create an admin nobody can log in with
+  puts "NS8_ADMIN_NEEDS_PASSWORD"
+  exit 4
+end
 user ||= User.new(name: username)
 
 # Renaming the admin onto an account that already exists would fail on save!

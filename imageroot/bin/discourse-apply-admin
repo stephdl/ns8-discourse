@@ -59,6 +59,13 @@ try:
 finally:
     os.unlink(envfile)
 
+if "NS8_ADMIN_NEEDS_PASSWORD" in proc.stdout:
+    # Make the UI ask for a password again
+    agent.set_env("ADMIN_PASSWORD_SET", "False")
+    agent.set_env("ADMIN_ID", "")
+    print(agent.SD_ERR + "The Discourse admin account no longer exists, set a new admin password in Settings", file=sys.stderr)
+    sys.exit(1)
+
 applied = re.search(r"^NS8_ADMIN_APPLIED=(\d+)$", proc.stdout, re.M)
 if proc.returncode != 0 or not applied:
     print(agent.SD_ERR + "The Discourse admin account was not applied", file=sys.stderr)

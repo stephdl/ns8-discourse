@@ -10,9 +10,12 @@ set -e
 # Redirect any output to the journal (stderr)
 exec 1>&2
 
+# Settings are read at container start only: restart a running app, but never
+# stop a first boot in the middle of its database migrations
+if systemctl --user -q is-active discourse-app.service; then
+    systemctl --user restart discourse-app.service
+fi
 systemctl --user enable discourse.service
-systemctl --user start discourse.service postgresql-app.service valkey-app.service
-# Settings are read at container start only
-systemctl --user restart discourse-app.service
+systemctl --user start discourse.service postgresql-app.service valkey-app.service discourse-app.service
 
 runagent discourse-apply-admin

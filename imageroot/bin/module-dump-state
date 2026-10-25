@@ -7,8 +7,5 @@
 
 set -e
 
-if ! systemctl --user -q is-active postgresql-app.service; then
-    exit 0
-fi
-
+# No guard on the service state: a snapshot without the dump cannot be restored, fail the backup instead
 podman exec postgresql-app pg_dump -U discourse --format=c discourse > discourse.pg_dump

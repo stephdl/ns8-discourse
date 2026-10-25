@@ -5,8 +5,6 @@ Library    SSHLibrary
 ${ADMIN_USER}        admin
 ${ADMIN_PASSWORD}    Nethesis,1234
 ${SCENARIO}          install
-# The update scenario starts from this release, then upgrades it to ${IMAGE_URL}.
-${STABLE_IMAGE}      ghcr.io/stephdl/discourse:1.0.0
 # Any resolvable-looking name: the schema demands a dot, nothing resolves it.
 ${TEST_HOST}    discourse.ns8-ci.test
 ${ADMIN}        "admin_email":"admin@ns8-ci.test","admin_username":"ns8admin","default_locale":"en","oidc_enabled":false
@@ -19,6 +17,13 @@ Login to cluster-admin
     Fill Text    text="Password"    ${ADMIN_PASSWORD}
     Click    button >> text="Log in"
     Wait For Elements State    css=#main-content    visible    timeout=30s
+
+Enable the stephdl forge
+    # The module is published there, not in the default NS8 repositories.
+    ${rc} =    Execute Command
+    ...    api-cli run add-repository --data '{"name":"stephdl","url":"https://forge.de-labrusse.fr/ns8/updates/","status":true}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
 
 Discourse answers
     ${output}  ${rc} =    Execute Command    curl -sk -o /dev/null -w '\%{http_code}' --resolve ${TEST_HOST}:443:127.0.0.1 https://${TEST_HOST}/srv/status
@@ -35,7 +40,14 @@ The admin account is stored
 
 *** Test Cases ***
 Check if discourse is installed correctly
-    ${image} =    Set Variable If    '${SCENARIO}' == 'update'    ${STABLE_IMAGE}    ${IMAGE_URL}
+    # The update scenario starts from the release published in the stephdl forge,
+    # then upgrades it to the image under test through update-module below.
+    IF    '${SCENARIO}' == 'update'
+        Enable the stephdl forge
+        ${image} =    Set Variable    discourse
+    ELSE
+        ${image} =    Set Variable    ${IMAGE_URL}
+    END
     ${output}  ${rc} =    Execute Command    add-module ${image} 1
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0

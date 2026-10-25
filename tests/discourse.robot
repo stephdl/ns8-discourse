@@ -4,6 +4,7 @@ Library    SSHLibrary
 *** Variables ***
 ${ADMIN_USER}        admin
 ${ADMIN_PASSWORD}    Nethesis,1234
+${SCENARIO}          install
 # Any resolvable-looking name: the schema demands a dot, nothing resolves it.
 ${TEST_HOST}    discourse.ns8-ci.test
 ${ADMIN}        "admin_email":"admin@ns8-ci.test","admin_username":"ns8admin","default_locale":"en","oidc_enabled":false
@@ -17,9 +18,37 @@ Login to cluster-admin
     Click    button >> text="Log in"
     Wait For Elements State    css=#main-content    visible    timeout=30s
 
+Enable the stephdl forge
+    # The module is published there, not in the default NS8 repositories.
+    ${rc} =    Execute Command
+    ...    api-cli run add-repository --data '{"name":"stephdl","url":"https://forge.de-labrusse.fr/ns8/updates/","status":true}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+
+Discourse answers
+    ${output}  ${rc} =    Execute Command    curl -sk -o /dev/null -w '\%{http_code}' --resolve ${TEST_HOST}:443:127.0.0.1 https://${TEST_HOST}/srv/status
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal    ${output}    200
+
+The admin account is stored
+    ${output}  ${rc} =    Execute Command
+    ...    runagent -m ${module_id} podman exec postgresql-app psql -U discourse -d discourse -tAc "SELECT admin FROM users WHERE username = 'ns8admin'"
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal    ${output}    t
+
 *** Test Cases ***
 Check if discourse is installed correctly
-    ${output}  ${rc} =    Execute Command    add-module ${IMAGE_URL} 1
+    # The update scenario starts from the release published in the stephdl forge,
+    # then upgrades it to the image under test through update-module below.
+    IF    '${SCENARIO}' == 'update'
+        Enable the stephdl forge
+        ${image} =    Set Variable    discourse
+    ELSE
+        ${image} =    Set Variable    ${IMAGE_URL}
+    END
+    ${output}  ${rc} =    Execute Command    add-module ${image} 1
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     &{output} =    Evaluate    ${output}
@@ -54,16 +83,38 @@ Check if discourse configuration reads back
     Should Be True    ${config}[admin_password_set]
 
 Check if discourse answers through Traefik
-    ${output}  ${rc} =    Execute Command    curl -sk -o /dev/null -w '\%{http_code}' --resolve ${TEST_HOST}:443:127.0.0.1 https://${TEST_HOST}/srv/status
-    ...    return_rc=True
-    Should Be Equal As Integers    ${rc}  0
-    Should Be Equal    ${output}    200
+    Discourse answers
+
+Check if the admin account is created
+    Wait Until Keyword Succeeds    30 times    10 seconds    The admin account is stored
 
 Check if a reconfigure without password is accepted
     ${rc} =    Execute Command
     ...    api-cli run module/${module_id}/configure-module --data '{"host":"${TEST_HOST}","lets_encrypt":false,${ADMIN}}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
+
+Update discourse to the image under test
+    Skip If    '${SCENARIO}' != 'update'    scenario is ${SCENARIO}, nothing to update
+    ${rc} =    Execute Command
+    ...    api-cli run update-module --data '{"force":true,"module_url":"${IMAGE_URL}","instances":["${module_id}"]}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+
+Check discourse works after the update
+    Skip If    '${SCENARIO}' != 'update'    scenario is ${SCENARIO}, nothing to update
+    # Discourse migrates its database on start, which can take a few minutes.
+    Wait Until Keyword Succeeds    60 times    10 seconds    Discourse answers
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/get-configuration --data '{}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    ${config} =    Evaluate    json.loads('''${output}''')    modules=json
+    Should Be Equal    ${config}[host]    ${TEST_HOST}
+    Should Be True    ${config}[admin_password_set]
+
+Check the admin account survives the update
+    Skip If    '${SCENARIO}' != 'update'    scenario is ${SCENARIO}, nothing to update
+    The admin account is stored
 
 Take screenshots
     [Tags]    ui

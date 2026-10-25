@@ -10,12 +10,6 @@ set -e
 # Redirect any output to the journal (stderr)
 exec 1>&2
 
-# The pod host name is set at pod creation: restart the whole pod when the host changes
-running=$(podman pod inspect discourse --format '{{.Hostname}}' 2>/dev/null || :)
-if [[ -n "${running}" && "${running}" != "${TRAEFIK_HOST}" ]]; then
-    systemctl --user stop discourse.service
-fi
-
 systemctl --user enable discourse.service
 systemctl --user start discourse.service postgresql-app.service valkey-app.service
 # Settings are read at container start only

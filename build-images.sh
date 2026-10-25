@@ -46,7 +46,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.min-core=3.20.1" \
-    --label="org.nethserver.images=docker.io/postgres:17.11-alpine docker.io/nginx:1.30.6-alpine" \
+    --label="org.nethserver.images=docker.io/postgres:17.11-alpine docker.io/nginx:1.31.7-alpine" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

@@ -15,7 +15,7 @@ agent.set_weight(os.path.basename(__file__), 0) # Validation step, no task progr
 data = json.load(sys.stdin)
 host = data["host"]
 
-# Restore and move take over the host of an instance that may still own the route
+# A move takes over the host of the source, which keeps its route until the move ends
 if os.path.exists("skip-host-check"):
     os.unlink("skip-host-check")
     sys.exit(0)

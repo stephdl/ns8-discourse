@@ -8,13 +8,19 @@
 import os
 import sys
 import json
+import subprocess
 import agent
 
 request = json.load(sys.stdin)
 renv = request['environment']
 
 # Passwords and secrets come back with the restored files
-open("skip-host-check", "w").close()
+if agent.http_route_in_use(domain=renv["TRAEFIK_HOST"]):
+    # The original instance may still run: start without a route, like a clone
+    print(agent.SD_WARNING + f"Host {renv['TRAEFIK_HOST']} is used by another application, set a new host name in Settings", file=sys.stderr)
+    subprocess.run(["systemctl", "--user", "enable", "--now", "discourse.service"], check=True)
+    sys.exit(0)
+
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": renv["TRAEFIK_HOST"],
     # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand

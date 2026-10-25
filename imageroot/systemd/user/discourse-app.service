@@ -1,0 +1,37 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman discourse-app.service
+BindsTo=discourse.service
+After=discourse.service postgresql-app.service valkey-app.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/discourse-app.pid %t/discourse-app.ctr-id
+ExecStartPre=runagent discourse-config
+# A failed OIDC discovery stays 10 minutes in the Redis cache, drop it so a fixed provider works at once
+ExecStartPre=-/usr/bin/podman exec valkey-app /bin/sh -c 'valkey-cli --scan --pattern "*openid-connect-discovery*" | xargs -r valkey-cli del'
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/discourse-app.pid \
+    --cidfile %t/discourse-app.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/discourse.pod-id --replace -d --name discourse-app \
+    --volume discourse-shared:/shared:Z \
+    --volume %S/discourse/nginx/10-http.conf:/etc/nginx/conf.d/outlets/server/10-http.conf:ro,z \
+    --volume %S/discourse/nginx/05-real-ip.conf:/etc/nginx/conf.d/outlets/server/05-real-ip.conf:ro,z \
+    --env-file=%S/state/secrets/discourse.env \
+    --env-file=%S/state/secrets/oidc.env \
+    --env-file=%S/state/discourse.env \
+    ${DISCOURSE_IMAGE}
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/discourse-app.ctr-id -t 30
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/discourse-app.ctr-id
+PIDFile=%t/discourse-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

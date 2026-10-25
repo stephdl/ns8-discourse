@@ -16,8 +16,10 @@
       "automerge": false
     },
     {
-      "matchDepNames": ["valkey/valkey"],
-      "allowedVersions": "/^8\\.1\\./"
+      "description": "A new Redis major can change the persistence format, review it by hand",
+      "matchDepNames": ["redis"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
     }
   ]
 }

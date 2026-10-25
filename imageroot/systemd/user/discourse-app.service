@@ -6,7 +6,7 @@
 [Unit]
 Description=Podman discourse-app.service
 BindsTo=discourse.service
-After=discourse.service postgresql-app.service valkey-app.service
+After=discourse.service postgresql-app.service redis-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -17,7 +17,7 @@ TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/discourse-app.pid %t/discourse-app.ctr-id
 ExecStartPre=runagent discourse-config
 # A failed OIDC discovery stays 10 minutes in the Redis cache, drop it so a fixed provider works at once
-ExecStartPre=-/usr/bin/podman exec valkey-app /bin/sh -c 'valkey-cli --scan --pattern "*openid-connect-discovery*" | xargs -r valkey-cli del'
+ExecStartPre=-/usr/bin/podman exec redis-app /bin/sh -c 'redis-cli --scan --pattern "*openid-connect-discovery*" | xargs -r redis-cli del'
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/discourse-app.pid \
     --cidfile %t/discourse-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/discourse.pod-id --replace -d --name discourse-app \

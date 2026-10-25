@@ -17,7 +17,7 @@ reponame="discourse"
 discourse_image="docker.io/discourse/discourse:2026.7.4"
 # discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
-valkey_image="docker.io/valkey/valkey:8.1.10-alpine"
+redis_image="docker.io/redis:8.10.2-alpine"
 
 # Show the upstream version in the About page, the metadata file is restored on exit
 metadata_file="ui/public/metadata.json"
@@ -56,7 +56,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.min-core=3.20.1" \
-    --label="org.nethserver.images=${postgres_image} ${valkey_image} ${discourse_image}" \
+    --label="org.nethserver.images=${postgres_image} ${redis_image} ${discourse_image}" \
     --label="org.nethserver.volumes=discourse-shared" \
     "${container}"
 # Commit the image

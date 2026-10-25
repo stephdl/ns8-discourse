@@ -16,6 +16,6 @@ if systemctl --user -q is-active discourse-app.service; then
     systemctl --user restart discourse-app.service
 fi
 systemctl --user enable discourse.service
-systemctl --user start discourse.service postgresql-app.service valkey-app.service discourse-app.service
+systemctl --user start discourse.service postgresql-app.service redis-app.service discourse-app.service
 
 runagent discourse-apply-admin

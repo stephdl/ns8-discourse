@@ -9,7 +9,7 @@ set -e
 
 exec 1>&2
 
-systemctl --user try-restart discourse.service postgresql-app.service valkey-app.service discourse-app.service
+systemctl --user try-restart discourse.service postgresql-app.service redis-app.service discourse-app.service
 
 # Apply a password left pending by a configure that ran while Discourse was down
 if [[ -f secrets/admin_password ]]; then

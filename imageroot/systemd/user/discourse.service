@@ -10,8 +10,8 @@
 
 [Unit]
 Description=Podman discourse.service
-Requires=postgresql-app.service valkey-app.service discourse-app.service
-Before=postgresql-app.service valkey-app.service discourse-app.service
+Requires=postgresql-app.service redis-app.service discourse-app.service
+Before=postgresql-app.service redis-app.service discourse-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n

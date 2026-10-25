@@ -11,6 +11,7 @@ exec 1>&2
 
 systemctl --user try-restart discourse.service postgresql-app.service valkey-app.service discourse-app.service
 
-if systemctl --user -q is-active discourse-app.service; then
+# Apply a password left pending by a configure that ran while Discourse was down
+if [[ -f secrets/admin_password ]]; then
     runagent discourse-apply-admin
 fi

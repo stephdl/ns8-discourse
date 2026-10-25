@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Must be a valid email address",
     "no_route_description": "This instance is a clone and keeps the host name of its source. Set a new host name and save to make Discourse reachable.",
     "admin_username_already_used": "This username belongs to another Discourse account",
-    "admin_email_already_used": "This email belongs to another Discourse account"
+    "admin_email_already_used": "This email belongs to another Discourse account",
+    "admin_password_invalid_chars": "The password cannot contain line breaks or control characters",
+    "oidc_client_secret_invalid_chars": "The secret cannot contain line breaks or control characters"
   },
   "about": {
     "title": "About"

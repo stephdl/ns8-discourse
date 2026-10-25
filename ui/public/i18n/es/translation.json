@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Debe ser una dirección de correo válida",
     "no_route_description": "Esta instancia es un clon y conserva el nombre de host de su origen. Indica un nuevo nombre de host y guarda para que Discourse sea accesible.",
     "admin_username_already_used": "Este nombre de usuario pertenece a otra cuenta de Discourse",
-    "admin_email_already_used": "Este correo pertenece a otra cuenta de Discourse"
+    "admin_email_already_used": "Este correo pertenece a otra cuenta de Discourse",
+    "admin_password_invalid_chars": "La contraseña no puede contener saltos de línea ni caracteres de control",
+    "oidc_client_secret_invalid_chars": "El secreto no puede contener saltos de línea ni caracteres de control"
   },
   "about": {
     "title": "Acerca de"

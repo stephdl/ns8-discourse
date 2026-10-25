@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Muss eine gültige E-Mail-Adresse sein",
     "no_route_description": "Diese Instanz ist ein Klon und behält den Hostnamen ihrer Quelle. Lege einen neuen Hostnamen fest und speichere, um Discourse erreichbar zu machen.",
     "admin_username_already_used": "Dieser Benutzername gehört zu einem anderen Discourse-Konto",
-    "admin_email_already_used": "Diese E-Mail gehört zu einem anderen Discourse-Konto"
+    "admin_email_already_used": "Diese E-Mail gehört zu einem anderen Discourse-Konto",
+    "admin_password_invalid_chars": "Das Passwort darf keine Zeilenumbrüche oder Steuerzeichen enthalten",
+    "oidc_client_secret_invalid_chars": "Das Secret darf keine Zeilenumbrüche oder Steuerzeichen enthalten"
   },
   "about": {
     "title": "Über"

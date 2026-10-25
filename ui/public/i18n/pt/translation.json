@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Deve ser um endereço de email válido",
     "no_route_description": "Esta instância é um clone e mantém o nome do anfitrião da origem. Defina um novo nome do anfitrião e guarde para tornar o Discourse acessível.",
     "admin_username_already_used": "Este nome de utilizador pertence a outra conta Discourse",
-    "admin_email_already_used": "Este email pertence a outra conta Discourse"
+    "admin_email_already_used": "Este email pertence a outra conta Discourse",
+    "admin_password_invalid_chars": "A palavra-passe não pode conter quebras de linha nem caracteres de controlo",
+    "oidc_client_secret_invalid_chars": "O segredo não pode conter quebras de linha nem caracteres de controlo"
   },
   "about": {
     "title": "Acerca de"

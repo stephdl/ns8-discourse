@@ -6,6 +6,7 @@
 #
 
 import os
+import re
 import sys
 import json
 import agent
@@ -24,6 +25,10 @@ for field in ("oidc_discovery_url", "oidc_client_id"):
 secret_set = os.getenv("OIDC_SECRET_SET") == "True"
 if not data.get("oidc_client_secret") and not secret_set:
     errors.append({'field':'oidc_client_secret','parameter':'oidc_client_secret','value':'','error':'oidc_client_secret_required'})
+
+# The secret goes into an env file as one KEY=value line
+if re.search(r'[\x00-\x1f\x7f]', data.get("oidc_client_secret", "")):
+    errors.append({'field':'oidc_client_secret','parameter':'oidc_client_secret','value':'','error':'oidc_client_secret_invalid_chars'})
 
 if errors:
     agent.set_status('validation-failed')

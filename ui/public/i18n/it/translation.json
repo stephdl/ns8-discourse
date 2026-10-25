@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Deve essere un indirizzo email valido",
     "no_route_description": "Questa istanza è un clone e mantiene il nome host della sorgente. Imposta un nuovo nome host e salva per rendere Discourse raggiungibile.",
     "admin_username_already_used": "Questo nome utente appartiene a un altro account Discourse",
-    "admin_email_already_used": "Questa email appartiene a un altro account Discourse"
+    "admin_email_already_used": "Questa email appartiene a un altro account Discourse",
+    "admin_password_invalid_chars": "La password non può contenere a capo o caratteri di controllo",
+    "oidc_client_secret_invalid_chars": "Il secret non può contenere a capo o caratteri di controllo"
   },
   "about": {
     "title": "Informazioni"

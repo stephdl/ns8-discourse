@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Doit être une adresse email valide",
     "no_route_description": "Cette instance est un clone et garde le nom d'hôte de sa source. Indiquez un nouveau nom d'hôte et enregistrez pour rendre Discourse accessible.",
     "admin_username_already_used": "Ce nom d'utilisateur appartient à un autre compte Discourse",
-    "admin_email_already_used": "Cet email appartient à un autre compte Discourse"
+    "admin_email_already_used": "Cet email appartient à un autre compte Discourse",
+    "admin_password_invalid_chars": "Le mot de passe ne peut pas contenir de retour à la ligne ni de caractère de contrôle",
+    "oidc_client_secret_invalid_chars": "Le secret ne peut pas contenir de retour à la ligne ni de caractère de contrôle"
   },
   "about": {
     "title": "À propos"

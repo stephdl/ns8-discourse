@@ -100,7 +100,9 @@
     "notification_email_anyOf": "Baliozko helbide elektroniko bat izan behar du",
     "no_route_description": "Instantzia hau klon bat da eta jatorriaren ostalari-izena gordetzen du. Ezarri ostalari-izen berri bat eta gorde Discourse eskuragarri egiteko.",
     "admin_username_already_used": "Erabiltzaile-izen hau beste Discourse kontu batena da",
-    "admin_email_already_used": "Helbide elektroniko hau beste Discourse kontu batena da"
+    "admin_email_already_used": "Helbide elektroniko hau beste Discourse kontu batena da",
+    "admin_password_invalid_chars": "Pasahitzak ezin du lerro-jauzirik edo kontrol-karaktererik izan",
+    "oidc_client_secret_invalid_chars": "Sekretuak ezin du lerro-jauzirik edo kontrol-karaktererik izan"
   },
   "about": {
     "title": "Honi buruz"

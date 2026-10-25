@@ -657,6 +657,8 @@ export default {
 
       if (!this.host) {
         fail("host", "common.required");
+      } else if (!this.host.includes(".")) {
+        fail("host", "settings.host_pattern");
       }
       if (!this.defaultLocale) {
         fail("default_locale", "common.required");

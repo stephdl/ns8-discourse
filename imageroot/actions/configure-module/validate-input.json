@@ -40,7 +40,8 @@
         "host": {
             "type": "string",
             "format": "idn-hostname",
-            "description": "Host name of the forum, like forum.example.org"
+            "description": "Host name of the forum, like forum.example.org",
+            "pattern": "\\."
         },
         "lets_encrypt": {
             "type": "boolean",
@@ -63,8 +64,12 @@
             "type": "string",
             "description": "Sender address of the forum emails, empty means noreply@<host>",
             "anyOf": [
-                {"format": "email"},
-                {"maxLength": 0}
+                {
+                    "format": "email"
+                },
+                {
+                    "maxLength": 0
+                }
             ]
         },
         "default_locale": {
@@ -77,8 +82,12 @@
         "oidc_discovery_url": {
             "type": "string",
             "anyOf": [
-                {"pattern": "^https?://[^ ]+$"},
-                {"maxLength": 0}
+                {
+                    "pattern": "^https?://[^ ]+$"
+                },
+                {
+                    "maxLength": 0
+                }
             ]
         },
         "oidc_client_id": {

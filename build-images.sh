@@ -13,40 +13,50 @@ images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
-reponame="kickstart"
+reponame="discourse"
+discourse_image="docker.io/discourse/discourse:2026.7.4"
+postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
+valkey_image="docker.io/valkey/valkey:8.1.10-alpine"
+
+# Show the upstream version in the About page, the metadata file is restored on exit
+metadata_file="ui/public/metadata.json"
+metadata_backup=$(mktemp)
+cleanup() {
+    cp "${metadata_backup}" "${metadata_file}"
+    rm -f "${metadata_backup}"
+}
+cp "${metadata_file}" "${metadata_backup}"
+trap cleanup EXIT
+jq --arg v "${discourse_image##*:}" \
+    '.upstream_name |= gsub("version set automatically"; $v)' \
+    "${metadata_file}" > "${metadata_file}.tmp" && mv "${metadata_file}.tmp" "${metadata_file}"
 
 # Create a new empty container image
 container=$(buildah from scratch)
 
-# Reuse existing nodebuilder-kickstart container, to speed up builds
-if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-kickstart; then
+# Reuse existing nodebuilder-discourse container, to speed up builds
+if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-discourse; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-kickstart -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-discourse -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
 fi
 
 echo "Build static UI files with node..."
 buildah run \
     --workingdir=/usr/src/ui \
     --env="NODE_OPTIONS=--openssl-legacy-provider" \
-    nodebuilder-kickstart \
+    nodebuilder-discourse \
     sh -c "corepack enable && yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
-# Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
-# Select you image(s) with the label org.nethserver.images
-# ghcr.io/xxxxx is the GitHub container registry or your own registry or docker.io for Docker Hub
-# The image tag is set to latest by default, but can be overridden with the IMAGETAG environment variable
-# --label="org.nethserver.images=docker.io/mariadb:10.11.19 docker.io/roundcube/roundcubemail:1.6.19-apache"
-# rootfull=0 === rootless container
-# tcp-ports-demand=1 number of tcp Port to reserve , 1 is the minimum, can be udp or tcp
 buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.min-core=3.20.1" \
-    --label="org.nethserver.images=docker.io/postgres:17.11-alpine docker.io/nginx:1.30.6-alpine" \
+    --label="org.nethserver.images=${postgres_image} ${valkey_image} ${discourse_image}" \
+    --label="org.nethserver.volumes=discourse-shared" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

@@ -2,5 +2,22 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>NethServer/.github:ns8-automerge"
+  ],
+  "packageRules": [
+    {
+      "description": "Follow the Discourse ESR line, the monthly -latest tags change too fast",
+      "matchDepNames": ["discourse/discourse"],
+      "allowedVersions": "/^\\d{4}\\.\\d+\\.\\d+$/"
+    },
+    {
+      "description": "A new ESR series runs database migrations, review it by hand",
+      "matchDepNames": ["discourse/discourse"],
+      "matchUpdateTypes": ["major", "minor"],
+      "automerge": false
+    },
+    {
+      "matchDepNames": ["valkey/valkey"],
+      "allowedVersions": "/^8\\.1\\./"
+    }
   ]
 }

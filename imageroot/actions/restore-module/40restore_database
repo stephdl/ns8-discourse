@@ -8,7 +8,6 @@
 set -e -o pipefail
 exec 1>&2
 
-trap 'rm -rf restore' EXIT
 mkdir -vp restore
 mv -v discourse.pg_dump restore/
 
@@ -32,3 +31,6 @@ podman run \
     --env TZ=UTC \
     --replace --name=restore_db \
     "${POSTGRES_IMAGE}"
+
+# Kept on failure, to retry or inspect the dump
+rm -rf restore

@@ -16,7 +16,8 @@ renv = request['environment']
 # Passwords and secrets come back with the restored files
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": renv["TRAEFIK_HOST"],
-    "lets_encrypt": renv.get("TRAEFIK_LETS_ENCRYPT") == "True",
+    # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand
+    "lets_encrypt": False,
     "admin_email": renv["ADMIN_EMAIL"],
     "admin_username": renv["ADMIN_USERNAME"],
     "notification_email": renv.get("NOTIFICATION_EMAIL", ""),

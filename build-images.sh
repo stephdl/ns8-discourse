@@ -15,6 +15,7 @@ repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="discourse"
 discourse_image="docker.io/discourse/discourse:2026.7.4"
+# discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
 valkey_image="docker.io/valkey/valkey:8.1.10-alpine"
 

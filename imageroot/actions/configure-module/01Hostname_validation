@@ -15,6 +15,11 @@ agent.set_weight(os.path.basename(__file__), 0) # Validation step, no task progr
 data = json.load(sys.stdin)
 host = data["host"]
 
+# Restore and move take over the host of an instance that may still own the route
+if os.path.exists("skip-host-check"):
+    os.unlink("skip-host-check")
+    sys.exit(0)
+
 # A clone keeps the host of its source but has no route yet
 route = agent.get_route(os.environ['MODULE_ID'])
 if route.get('host') != host and agent.http_route_in_use(domain=host):

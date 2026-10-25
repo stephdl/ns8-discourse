@@ -17,6 +17,7 @@ if not request.get("replace"):
     sys.exit(0)
 
 # Move: the source instance is gone, take over its host name
+open("skip-host-check", "w").close()
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": os.environ["TRAEFIK_HOST"],
     # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand

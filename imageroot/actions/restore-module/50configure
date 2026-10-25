@@ -14,6 +14,7 @@ request = json.load(sys.stdin)
 renv = request['environment']
 
 # Passwords and secrets come back with the restored files
+open("skip-host-check", "w").close()
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": renv["TRAEFIK_HOST"],
     # The host may not resolve publicly on the new node: the admin enables Let's Encrypt again by hand

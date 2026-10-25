@@ -1,35 +1,92 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Configure kickstart",
-    "$id": "http://nethserver.org/json-schema/task/input/kickstart/configure-module",
-    "description": "Configure kickstart",
+    "title": "Configure discourse",
+    "$id": "http://nethserver.org/json-schema/task/input/discourse/configure-module",
+    "description": "Configure discourse",
     "examples": [
         {
-            "host": "kickstart.domain.org",
-            "http2https": true,
-            "lets_encrypt": true
+            "host": "forum.example.org",
+            "lets_encrypt": true,
+            "admin_email": "admin@example.org",
+            "admin_username": "admin",
+            "admin_password": "Very-l0ng-Passw0rd!",
+            "notification_email": "noreply@forum.example.org",
+            "default_locale": "en",
+            "oidc_enabled": false
+        },
+        {
+            "host": "forum.example.org",
+            "lets_encrypt": true,
+            "admin_email": "admin@example.org",
+            "admin_username": "admin",
+            "notification_email": "",
+            "default_locale": "fr",
+            "oidc_enabled": true,
+            "oidc_discovery_url": "https://sso.example.org/realms/example/.well-known/openid-configuration",
+            "oidc_client_id": "discourse",
+            "oidc_client_secret": "s3cret"
         }
     ],
     "type": "object",
     "required": [
-        "host"
+        "host",
+        "lets_encrypt",
+        "admin_email",
+        "admin_username",
+        "default_locale",
+        "oidc_enabled"
     ],
     "properties": {
         "host": {
             "type": "string",
-            "description": "Host name for the application, like 'kickstart.domain.org'",
-            "format": "hostname",
-            "pattern": "\\."
+            "format": "idn-hostname",
+            "description": "Host name of the forum, like forum.example.org"
         },
         "lets_encrypt": {
             "type": "boolean",
-            "title": "Let's Encrypt certificate",
-            "description": "Request a valid Let's Encrypt certificate."
+            "title": "Let's Encrypt certificate"
         },
-        "http2https": {
-            "type": "boolean",
-            "title": "HTTP to HTTPS redirection",
-            "description": "Redirect all the HTTP requests to HTTPS"
+        "admin_email": {
+            "type": "string",
+            "format": "email"
+        },
+        "admin_username": {
+            "type": "string",
+            "description": "Discourse username rules: 3 to 20 characters, letters, digits, dot, dash and underscore",
+            "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{1,18}[A-Za-z0-9]$"
+        },
+        "admin_password": {
+            "type": "string",
+            "description": "Required at the first configuration, omit it to keep the current password"
+        },
+        "notification_email": {
+            "type": "string",
+            "description": "Sender address of the forum emails, empty means noreply@<host>",
+            "anyOf": [
+                {"format": "email"},
+                {"maxLength": 0}
+            ]
+        },
+        "default_locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(_[A-Za-z]{2,4})?$"
+        },
+        "oidc_enabled": {
+            "type": "boolean"
+        },
+        "oidc_discovery_url": {
+            "type": "string",
+            "anyOf": [
+                {"pattern": "^https?://[^ ]+$"},
+                {"maxLength": 0}
+            ]
+        },
+        "oidc_client_id": {
+            "type": "string"
+        },
+        "oidc_client_secret": {
+            "type": "string",
+            "description": "Omit it to keep the current secret"
         }
     }
 }

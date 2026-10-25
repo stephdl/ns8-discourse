@@ -1,17 +1,24 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2023 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
+
 set -e
 
 # Redirect any output to the journal (stderr)
 exec 1>&2
 
-# If the control reaches this step, the service can be enabled and started
+# The pod host name is set at pod creation: restart the whole pod when the host changes
+running=$(podman pod inspect discourse --format '{{.Hostname}}' 2>/dev/null || :)
+if [[ -n "${running}" && "${running}" != "${TRAEFIK_HOST}" ]]; then
+    systemctl --user stop discourse.service
+fi
 
-touch smarthost.env
+systemctl --user enable discourse.service
+systemctl --user start discourse.service postgresql-app.service valkey-app.service
+# Settings are read at container start only
+systemctl --user restart discourse-app.service
 
-systemctl --user enable kickstart.service
-systemctl --user restart kickstart.service
+runagent discourse-apply-admin

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import json
+import agent
+
+agent.set_weight(os.path.basename(__file__), 0) # Validation step, no task progress at all
+
+data = json.load(sys.stdin)
+if not data.get("oidc_enabled"):
+    sys.exit(0)
+
+errors = []
+for field in ("oidc_discovery_url", "oidc_client_id"):
+    if not data.get(field):
+        errors.append({'field':field,'parameter':field,'value':'','error':field + '_required'})
+
+secret_set = os.getenv("OIDC_SECRET_SET") == "True"
+if not data.get("oidc_client_secret") and not secret_set:
+    errors.append({'field':'oidc_client_secret','parameter':'oidc_client_secret','value':'','error':'oidc_client_secret_required'})
+
+if errors:
+    agent.set_status('validation-failed')
+    json.dump(errors, fp=sys.stdout)
+    sys.exit(2)

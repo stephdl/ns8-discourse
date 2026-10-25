@@ -1,36 +1,46 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Get kickstart settings",
-    "$id": "http://nethserver.org/json-schema/task/input/kickstart/get-configuration",
-    "description": "Get kickstart settings",
-    "examples": [
-        {
-            "host": "kickstart.domain.org",
-            "http2https": true,
-            "lets_encrypt": true
-        }
-    ],
+    "title": "Get discourse settings",
+    "$id": "http://nethserver.org/json-schema/task/output/discourse/get-configuration",
+    "description": "Get discourse settings",
     "type": "object",
     "required": [
         "host",
-        "http2https",
-        "lets_encrypt"
+        "lets_encrypt",
+        "route_configured",
+        "admin_email",
+        "admin_username",
+        "admin_password_set",
+        "notification_email",
+        "default_locale",
+        "oidc_enabled",
+        "oidc_discovery_url",
+        "oidc_client_id",
+        "oidc_client_secret_set",
+        "oidc_callback_url",
+        "smarthost"
     ],
     "properties": {
-        "host": {
-            "type": "string",
-            "description": "Host name for the application, like 'kickstart.domain.org'",
-            "format": "idn-hostname"
-        },
-        "lets_encrypt": {
-            "type": "boolean",
-            "title": "Let's Encrypt certificate",
-            "description": "Request a valid Let's Encrypt certificate."
-        },
-        "http2https": {
-            "type": "boolean",
-            "title": "HTTP to HTTPS redirection",
-            "description": "Redirect all the HTTP requests to HTTPS"
+        "host": {"type": "string"},
+        "lets_encrypt": {"type": "boolean"},
+        "route_configured": {"type": "boolean"},
+        "admin_email": {"type": "string"},
+        "admin_username": {"type": "string"},
+        "admin_password_set": {"type": "boolean"},
+        "notification_email": {"type": "string"},
+        "default_locale": {"type": "string"},
+        "oidc_enabled": {"type": "boolean"},
+        "oidc_discovery_url": {"type": "string"},
+        "oidc_client_id": {"type": "string"},
+        "oidc_client_secret_set": {"type": "boolean"},
+        "oidc_callback_url": {"type": "string"},
+        "smarthost": {
+            "type": "object",
+            "required": ["enabled", "host"],
+            "properties": {
+                "enabled": {"type": "boolean"},
+                "host": {"type": "string"}
+            }
         }
     }
 }

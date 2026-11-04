@@ -20,7 +20,7 @@ corepack_version=0.36.0
 discourse_image="docker.io/discourse/discourse:2026.7.4"
 # discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
-redis_image="docker.io/redis:8.10.2-alpine"
+redis_image="docker.io/redis:8.10.3-alpine"
 
 # Show the upstream version in the About page, the metadata file is restored on exit
 metadata_file="ui/public/metadata.json"

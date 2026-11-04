@@ -14,6 +14,9 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="discourse"
+# Node.js 25+ no longer ships Corepack, install it from npm
+# renovate: datasource=npm packageName=corepack
+corepack_version=0.36.0
 discourse_image="docker.io/discourse/discourse:2026.7.4"
 # discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
@@ -38,7 +41,8 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-discourse container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-discourse; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-discourse -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-discourse -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
+    buildah run nodebuilder-discourse sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
 
 echo "Build static UI files with node..."
@@ -46,7 +50,7 @@ buildah run \
     --workingdir=/usr/src/ui \
     --env="NODE_OPTIONS=--openssl-legacy-provider" \
     nodebuilder-discourse \
-    sh -c "corepack enable && yarn install && yarn build"
+    sh -c "yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot

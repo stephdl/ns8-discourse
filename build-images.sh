@@ -17,7 +17,8 @@ reponame="discourse"
 # Node.js 25+ no longer ships Corepack, install it from npm
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
-discourse_image="docker.io/discourse/discourse:2026.7.4"
+# Discourse republishes ESR tags on rebuilds: the digest lets Renovate follow them
+discourse_image="docker.io/discourse/discourse:2026.7.4@sha256:a6f4386c45841ecad4dd7bbfc0d54d45e02b0868c20188118ac75563c9a86dfc"
 # discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
 redis_image="docker.io/redis:8.10.3-alpine"
@@ -31,7 +32,8 @@ cleanup() {
 }
 cp "${metadata_file}" "${metadata_backup}"
 trap cleanup EXIT
-jq --arg v "${discourse_image##*:}" \
+discourse_tag="${discourse_image%@*}"
+jq --arg v "${discourse_tag##*:}" \
     '.upstream_name |= gsub("version set automatically"; $v)' \
     "${metadata_file}" > "${metadata_file}.tmp" && mv "${metadata_file}.tmp" "${metadata_file}"
 

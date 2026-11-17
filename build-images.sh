@@ -43,7 +43,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-discourse container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-discourse; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-discourse -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
+    buildah from --name nodebuilder-discourse -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.1-slim
     buildah run nodebuilder-discourse sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
 

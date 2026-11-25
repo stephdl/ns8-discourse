@@ -18,7 +18,7 @@ reponame="discourse"
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
 # Discourse republishes ESR tags on rebuilds: the digest lets Renovate follow them
-discourse_image="docker.io/discourse/discourse:2026.7.4@sha256:a6f4386c45841ecad4dd7bbfc0d54d45e02b0868c20188118ac75563c9a86dfc"
+discourse_image="docker.io/discourse/discourse:2026.7.5@sha256:d4fc9fac9a8dbb69c66adba57d428a5eb8a609a8a69cbe8149c62275cf4949da"
 # discourse/postgres only publishes major tags: the digest pins the exact image
 postgres_image="docker.io/discourse/postgres:pg18@sha256:17aafaf96ee15c89e5ca0e42aa7fc2f3baeb83f0fb5b9e3bbc5f87c2c4c7e6e5"
 redis_image="docker.io/redis:8.10.3-alpine"
